@@ -6,8 +6,9 @@ Created on Wed Aug  9 16:54:16 2023
 """
 from N_Body_Physics_Solver import Orbit_object, N_body_system, AU
 #from Camera_operator import camera_operator
-from ursina import camera, window, Ursina, color, load_model, Entity, held_keys, mouse, time
+from ursina import * #camera, window, Ursina, color, load_model, Entity, held_keys, mouse, time
 import numpy as np
+import re
 
 '''planet data'''
 #sun
@@ -84,20 +85,25 @@ app = Ursina()
 window.color = color.black
 window.title = 'Cooles Sonnensystem'
 
+sky = Sky(texture='/background/stars.jpg')
+
 #Camera Movement constants
-speed = 10
+speed = 7
 rotation_speed = 10000
 
 #loading Planet models
 spheres = []
+texts = []
 # Create 8 spheres and add them to the list
 for obj in solar_system.Objects:
-    if obj.name == 'saturn':
-        mesh = load_model('/meshes/Saturn')
-        sphere = Entity(model=mesh, texture = obj.texture, scale = np.power(obj.radius/500000000, 0.333))
-        sphere.rotation_x += 80
-    else:
-        sphere = Entity(model='sphere', scale = np.power(obj.radius, 0.333), texture = obj.texture, position=(obj.pos[0], obj.pos[1], obj.pos[2]))
+    # if obj.name == 'saturn':
+    #     mesh = load_model('/meshes/Saturn')
+    #     sphere = Entity(model=mesh, texture = '/textures/saturn.jpg', scale = 0.0001)# np.power(obj.radius/20000000, 0.333))
+    #     sphere.rotation_x += 80
+    # else:
+    sphere = Entity(model='sphere', scale = np.power(obj.radius, 0.333), texture = obj.texture, position=(obj.pos[0], obj.pos[1], obj.pos[2]))
+    text = Text(parent = sphere, text = obj.name, scale = 10, y = 1.2, billbord = True)
+    texts.append(text)
     spheres.append(sphere)
 
 '''Update function for engine loop'''
@@ -133,12 +139,15 @@ def update():
         camera.position -= camera.right * time.dt * speed           # move up vertically
     if held_keys['d']:                               # If a is pressed
         camera.position += camera.right * time.dt * speed  
+                
+
 
     '''update visualization'''       
     for i, sphere in enumerate(spheres):
         sphere.x = solar_system.Objects[i].pos[0]
         sphere.y = solar_system.Objects[i].pos[1]
         sphere.z = solar_system.Objects[i].pos[2]
+        texts[i].text = solar_system.Objects[i].name + ': current position in AU:' + str(solar_system.y[i*6:i*6+3])
         
 app.run()
 
