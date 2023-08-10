@@ -85,7 +85,7 @@ app = Ursina()
 window.color = color.black
 window.title = 'Cooles Sonnensystem'
 
-sky = Sky(texture='/background/stars.jpg')
+#sky = Sky(texture='/background/stars.jpg')
 
 #Camera Movement constants
 speed = 7
